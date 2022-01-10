@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app-ui
+  labels:
+    app: weather-app-ui-deployment
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: weather-app-ui-pod
+  template:
+    metadata:
+      labels:
+        app: weather-app-ui-pod
+    spec:
+      containers:
+        - name: weather-app-ui
+          image: gcr.io/PROJECT_ID/app-weather-ui:SHORT_SHA
+
+          ports:
+            - containerPort: 3000
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-app-ui-lb-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: weather-app-ui-pod
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
